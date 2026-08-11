@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FlaRe: Floating Radiance Networks — explicit ray-traceable geometry with continuous neural radiance functions.">
+  <meta name="theme-color" content="#ffffff">
+  <title>FlaRe — Floating Radiance Networks</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar" data-topbar>
+    <a class="topbar-mark" href="#top" aria-label="FlaRe home">
+      <span class="mark-primitive" aria-hidden="true"></span>
+      <span>FlaRe</span>
+    </a>
+    <nav class="topbar-nav" aria-label="Primary navigation">
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#results">Results</a>
+    </nav>
+    <a class="header-paper" href="https://arxiv.org/abs/2608.05920" target="_blank" rel="noreferrer">
+      <img class="paper-thumb" src="media/paper_img_thumb.webp" alt="" aria-hidden="true">
+      <span>Read paper</span>
+      <span aria-hidden="true">↗</span>
+    </a>
+  </header>
+
+  <aside class="side-nav" aria-label="On this page" data-side-nav>
+    <div class="side-nav-track" aria-hidden="true"><span data-progress></span></div>
+    <a href="#overview" data-section="overview"><span class="side-dot"></span><span class="side-label">Overview</span></a>
+    <a href="#abstract" data-section="abstract"><span class="side-dot"></span><span class="side-label">Abstract</span></a>
+    <a href="#method" data-section="method"><span class="side-dot"></span><span class="side-label">Method</span></a>
+    <a href="#capabilities" data-section="capabilities"><span class="side-dot"></span><span class="side-label">Capabilities</span></a>
+    <a href="#results" data-section="results"><span class="side-dot"></span><span class="side-label">Results</span></a>
+    <a href="#citation" data-section="citation"><span class="side-dot"></span><span class="side-label">Citation</span></a>
+  </aside>
+
+  <button class="to-top" type="button" aria-label="Back to top" data-to-top>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg>
+  </button>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-wash wash-blue" aria-hidden="true"></div>
+      <div class="hero-wash wash-red" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <h1 class="wordmark">
+          <canvas id="flare-wordmark" aria-label="FlaRe"></canvas>
+          <span class="wordmark-fallback">FlaRe</span>
+        </h1>
+        <p class="hero-subtitle">Floating Radiance Networks</p>
+        <p class="hero-deck">Explicit ray-traceable geometry with continuous local neural radiance.</p>
+
+        <div class="authors" aria-label="Authors">
+          <span><a href="https://scholar.google.com/citations?user=ef2YKtsAAAAJ&amp;hl=pl&amp;oi=sra" target="_blank" rel="noreferrer"><span class="link-label">Krzysztof Byrski</span><sup>1,*,†</sup></a></span>
+          <span><a href="https://github.com/rtobiasz" target="_blank" rel="noreferrer"><span class="link-label">Rafał Tobiasz</span><sup>1,3,*</sup></a></span>
+          <span><a href="https://grzegorzwilczynski.com" target="_blank" rel="noreferrer"><span class="link-label">Grzegorz Wilczyński</span><sup>1,3</sup></a></span>
+          <span><a href="https://github.com/MikolajZielinski" target="_blank" rel="noreferrer"><span class="link-label">Mikołaj Zieliński</span><sup>2</sup></a></span>
+          <span>Dawid Baran</span>
+          <span><a href="https://scholar.google.com/citations?user=3XvUbbMAAAAJ&amp;hl=en" target="_blank" rel="noreferrer"><span class="link-label">Dominik Belter</span><sup>2</sup></a></span>
+          <span><a href="https://scholar.google.pl/citations?user=zSKYziUAAAAJ&amp;hl=pl" target="_blank" rel="noreferrer"><span class="link-label">Jacek Tabor</span><sup>1</sup></a></span>
+          <span><a href="https://scholar.google.com/citations?user=0kp0MbgAAAAJ&amp;hl=en" target="_blank" rel="noreferrer"><span class="link-label">Przemysław Spurek</span><sup>1,3</sup></a></span>
+        </div>
+        <div class="affiliations">
+          <span><a href="https://en.uj.edu.pl/en" target="_blank" rel="noreferrer"><sup>1</sup><span class="link-label">Jagiellonian University</span></a></span>
+          <span><a href="https://put.poznan.pl/en" target="_blank" rel="noreferrer"><sup>2</sup><span class="link-label">Poznań University of Technology</span></a></span>
+          <span><a href="https://www.ideas.edu.pl/en/" target="_blank" rel="noreferrer"><sup>3</sup><span class="link-label">IDEAS Research Institute</span></a></span>
+        </div>
+        <p class="author-note"><sup>*</sup> Equal contribution &nbsp; <sup>†</sup> Corresponding author</p>
+
+        <div class="paper-links">
+          <a class="button button-primary" href="https://arxiv.org/abs/2608.05920" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16H7zM9.5 8h5M9.5 11h5M9.5 14h3"/></svg>
+            arXiv
+          </a>
+          <a class="button" href="https://arxiv.org/pdf/2608.05920" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+            PDF
+          </a>
+          <a class="button" href="https://github.com/KByrski/FlaRe" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 19c-4 1-4-2-5-2m10 4v-3.5c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.5 0-1-.4-1.8-1-2.5.1-.2.4-1.2-.1-2.5 0 0-.8-.3-2.7 1a9.5 9.5 0 0 0-4.9 0C6 5.7 5.2 6 5.2 6c-.5 1.3-.2 2.3-.1 2.5-.7.7-1 1.5-1 2.5 0 3.5 2 4.3 4 4.5-.5.5-.6 1-.5 2V21"/></svg>
+            Code
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="overview section" id="overview">
+      <div class="container container-wide">
+        <div class="youtube-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/r3bXuXjNqUM"
+            title="FlaRe overview"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <p class="overview-caption">A complete walkthrough of FlaRe, from its local neural radiance representation to ray tracing and geometry manipulation.</p>
+      </div>
+    </section>
+
+    <section class="section" id="abstract">
+      <div class="container text-container">
+        <p class="section-label">Abstract</p>
+        <h2>One representation.<br>Not one rendering paradigm.</h2>
+        <div class="abstract-copy">
+          <p>Recent neural scene representations enable photorealistic novel-view synthesis, but most remain tightly coupled to a single rendering paradigm. <strong>Floating Radiance Networks (FlaRe)</strong> combine explicit ray-traceable geometry with continuous neural radiance functions.</p>
+          <p>A scene is represented by floating planar generalized Gaussian primitives. Each primitive carries a compact descriptor of a local radiance field, while one lightweight decoder maps the descriptor, local surface coordinates, and viewing direction to color and opacity.</p>
+          <p>This explicit structure enables interactive rendering and recursive ray tracing—alongside deformation, mesh extraction, stylization, and compact scene modeling.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section method-section" id="method">
+      <div class="container container-wide">
+        <div class="section-intro">
+          <p class="section-label">Method</p>
+          <h2>Local fields on explicit geometry</h2>
+          <p>FlaRe keeps the flexibility of a neural field while making every scene element directly queryable and editable.</p>
+        </div>
+        <div class="method-flow">
+          <article>
+            <div class="method-visual visual-gaussian" aria-hidden="true"><i></i><i></i><i></i></div>
+            <span>01</span>
+            <h3>Floating primitives</h3>
+            <p>Planar generalized Gaussians provide explicit, hardware-compatible geometry.</p>
+          </article>
+          <article>
+            <div class="method-visual visual-hit" aria-hidden="true"><i></i></div>
+            <span>02</span>
+            <h3>Local ray queries</h3>
+            <p>Every hit produces local coordinates and a viewing direction.</p>
+          </article>
+          <article>
+            <div class="method-visual visual-network" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <span>03</span>
+            <h3>Shared decoder</h3>
+            <p>A compact network decodes continuous color and opacity at the intersection.</p>
+          </article>
+        </div>
+        <div class="method-summary">
+          <span>Descriptor</span><b>+</b><span>Local coordinates</span><b>+</b><span>View direction</span><b>→</b><strong>Color & opacity</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="section capability-section" id="capabilities">
+      <div class="container container-wide">
+        <div class="section-intro">
+          <p class="section-label">Capabilities</p>
+          <h2>Built to be changed</h2>
+          <p>Six focused, looping demonstrations. Each one operates directly on the same learned FlaRe scene.</p>
+        </div>
+
+        <article class="showcase showcase-lead">
+          <div class="showcase-copy">
+            <span class="showcase-number">01</span>
+            <p class="showcase-tag">Geometry editing</p>
+            <h3>Edit the Garden scene</h3>
+            <p>Primitive-level deformation transfers edits from proxy geometry back to the learned scene without retraining.</p>
+          </div>
+          <div class="video-slot" style="--ratio: 64.75%">
+            <video autoplay loop muted playsinline preload="metadata" poster="media/garden_edit.jpg" aria-label="Garden scene editing"><source src="media/garden_edit.mp4" type="video/mp4"></video>
+          </div>
+        </article>
+
+        <article class="showcase showcase-reverse">
+          <div class="showcase-copy">
+            <span class="showcase-number">02</span>
+            <p class="showcase-tag">Hybrid ray tracing</p>
+            <h3>Fiat 126p meets Garden</h3>
+            <p>Conventional mesh objects integrate seamlessly with the neural scene, including environment reflections and secondary rays.</p>
+          </div>
+          <div class="video-slot" style="--ratio: 64.75%">
+            <video autoplay loop muted playsinline preload="metadata" poster="media/garden_fiat126p.jpg" aria-label="Fiat 126p in Garden"><source src="media/garden_fiat126p.mp4" type="video/mp4"></video>
+          </div>
+        </article>
+
+        <div class="style-transfer-block">
+          <div class="style-heading">
+            <span class="showcase-number">03–04</span>
+            <div><p class="showcase-tag">Appearance editing</p><h3>Style transfer stays ray-traceable</h3></div>
+            <p>Secondary rays query the modified descriptor space directly. No separate ray-tracing representation is needed.</p>
+          </div>
+          <div class="style-grid">
+            <figure>
+              <div class="video-slot" style="--ratio: 64.75%">
+                <video autoplay loop muted playsinline preload="metadata" poster="media/garden_style_transfer.jpg" aria-label="Garden style transfer with ray tracing"><source src="media/garden_style_transfer.mp4" type="video/mp4"></video>
+              </div>
+              <figcaption>Garden <span>· multiple styles + ray tracing</span></figcaption>
+            </figure>
+            <figure>
+              <div class="video-slot" style="--ratio: 64.75%">
+                <video autoplay loop muted playsinline preload="metadata" poster="media/kitchen_style_transfer.jpg" aria-label="Kitchen style transfer with ray tracing"><source src="media/kitchen_style_transfer.mp4" type="video/mp4"></video>
+              </div>
+              <figcaption>Kitchen <span>· style transfer + ray tracing</span></figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <article class="showcase showcase-materials">
+          <div class="showcase-copy">
+            <span class="showcase-number">05</span>
+            <p class="showcase-tag">Material response</p>
+            <h3>Glass, metal, and mirrors in Dr. Johnson</h3>
+            <p>Material-dependent reflection and refraction demonstrate recursive ray queries through both neural primitives and mesh geometry.</p>
+          </div>
+          <div class="video-slot" style="--ratio: 65.75%">
+            <video autoplay loop muted playsinline preload="metadata" poster="media/drjohnson_materials.jpg" aria-label="Material spheres in Dr. Johnson"><source src="media/drjohnson_materials.mp4" type="video/mp4"></video>
+          </div>
+        </article>
+
+        <article class="showcase showcase-reverse showcase-mesh">
+          <div class="showcase-copy">
+            <span class="showcase-number">06</span>
+            <p class="showcase-tag">Mesh extraction</p>
+            <h3>From descriptor field to mesh</h3>
+            <p>A single Garden trajectory reveals the learned descriptor field, depth, surface normals, and finally the extracted geometry—first as a gray mesh, then with color.</p>
+          </div>
+          <div class="video-slot" style="--ratio: 56.25%">
+            <video autoplay loop muted playsinline preload="metadata" poster="media/features_mesh.jpg" aria-label="Garden descriptor field, normals, depth, and mesh extraction"><source src="media/features_mesh.mp4" type="video/mp4"></video>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <div class="container container-wide">
+        <div class="section-intro compact-intro">
+          <p class="section-label">Results</p>
+          <h2>Compact and competitive</h2>
+          <p>High-quality novel-view synthesis in an explicitly ray-queryable scene representation.</p>
+        </div>
+        <div class="metric-grid" aria-label="Selected Mip-NeRF 360 metrics">
+          <div><span>PSNR</span><strong>28.93</strong><small>dB ↑</small></div>
+          <div><span>Rendering</span><strong>16.53</strong><small>FPS ↑</small></div>
+          <div><span>Memory</span><strong>207</strong><small>MB ↓</small></div>
+          <div class="metric-text"><span>Representation</span><strong>Unified</strong><small>render · trace · edit</small></div>
+        </div>
+        <p class="result-footnote">Selected results on Mip-NeRF 360. See the paper for complete comparisons on Mip-NeRF 360, Tanks and Temples, and Deep Blending.</p>
+      </div>
+    </section>
+
+    <section class="section citation-section" id="citation">
+      <div class="container text-container">
+        <p class="section-label">Citation</p>
+        <h2>Build on FlaRe</h2>
+        <div class="bibtex-wrap">
+          <button type="button" class="copy-button" data-copy-bibtex>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 8h10v12H9zM5 16V4h10"/></svg>
+            <span>Copy</span>
+          </button>
+          <pre><code id="bibtex">@article{byrski2026flare,
+  title   = {FlaRe: Floating Radiance Networks},
+  author  = {Byrski, Krzysztof and Tobiasz, Rafał and Wilczyński, Grzegorz and
+             Zieliński, Mikołaj and Baran, Dawid and Belter, Dominik and
+             Tabor, Jacek and Spurek, Przemysław},
+  journal = {arXiv preprint arXiv:2608.05920},
+  year    = {2026}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <a class="footer-logo" href="#top"><span class="mark-primitive"></span>FlaRe</a>
+      <span>Floating Radiance Networks</span>
+      <span>Jagiellonian University · PUT · IDEAS Research Institute</span>
+    </div>
+  </footer>
+</body>
+</html>
