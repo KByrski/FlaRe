@@ -1,0 +1,10 @@
+/build_mine.sh
+/build_renderer_rtx4090.sbatch
+/slurm_logs/
+/source/renderer/output/
+/source/submodules/simple-knn/build/
+/source/submodules/simple-knn/simple_knn.egg-info/
+
+**/__pycache__/
+*.py[cod]
+/source/viewer_renderer/output/

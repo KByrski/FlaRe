@@ -1,0 +1,18 @@
+{
+  "end_iter": 26000,
+  "warmup_start_iter": 1000,
+  "warmup_end_iter": 2000,
+  "densification_end_iter": 24000,
+  "max_Gaussians_per_model": 2000000,
+  "mu_grad_norm_threshold_for_densification": 0.0009,
+  "min_s_norm_threshold_for_Gauss_removal": 0.0001,
+  "min_s_coef_clipping_threshold": 0.0001,
+  "max_s_coef_clipping_threshold": 0.01,
+  "reg_depth_lambda": 0.001,
+  "reg_depth_start_iter": 3000,
+  "reg_normal_lambda": 0.05,
+  "reg_normal_start_iter": 7000,
+  "reg_normal_ramp_iters": 3000,
+  "reg_normal_depth_edge_threshold": 0.02,
+  "reg_scale_lambda": 0.001
+}
