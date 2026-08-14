@@ -63,14 +63,25 @@ operations without conversion to a separate representation.
 │   ├── run_mipnerf360.sh            # Mip-NeRF360 benchmark
 │   ├── run_deep_blending.sh         # Deep Blending benchmark
 │   └── run_tandt.sh                 # Tanks and Temples benchmark
-└── source/
-    ├── train.py                     # Training
-    ├── evaluate.py                  # Best-checkpoint evaluation
-    ├── extract_mesh.py              # Depth/normal rendering and TSDF fusion
-    ├── render_style.py              # CLIP/VGG appearance stylization
-    ├── style_transfer.py            # Style objectives and optimization
-    ├── scene/                       # Scene loading and FlaRe parameters
-    └── renderer/                    # CUDA/OptiX implementation
+├── source/
+│   ├── train.py                     # Training entry point and UI
+│   ├── trainer.py                   # Training orchestration and schedules
+│   ├── training_step.py             # Differentiable base/FlaRe update
+│   ├── evaluate.py                  # Evaluation CLI
+│   ├── evaluation_service.py        # Reusable rendering and metrics
+│   ├── renderer_facade.py           # Renderer-facing model interface
+│   ├── renderer_backend.py          # Native extension loading
+│   ├── optimizer_state.py           # Densification and Adam-state migration
+│   ├── checkpoint_io.py             # Versioned and legacy checkpoints
+│   ├── arguments/                   # Typed defaults and JSON presets
+│   ├── scene/                       # Scene, model, ray and dataset adapters
+│   ├── renderer/                    # CUDA/OptiX implementation
+│   ├── viewer_renderer/             # Optional viewer renderer
+│   ├── viewer.py                    # Optional interactive viewer
+│   ├── extract_mesh.py              # Depth/normal rendering and TSDF fusion
+│   ├── render_style.py              # CLIP/VGG appearance stylization
+│   └── style_transfer.py            # Style objectives and optimization
+└── tests/                           # CPU contracts and GPU renderer tests
 ```
 
 ## Installation
@@ -220,6 +231,23 @@ Training keeps rolling `best` and `last` checkpoints rather than every
 iteration. Once the full FlaRe model becomes active, `best.checkpoint` is
 selected using test-set FlaRe PSNR. At the end of training, the best checkpoint
 is rendered automatically.
+
+Checkpoints use a named, versioned format containing the model, optimizer,
+iteration, elapsed training time, and a configuration snapshot. Evaluation and
+downstream tools remain compatible with the earlier 17- and 18-entry tuple
+formats.
+
+To resume a run, repeat its dataset, resolution, and configuration arguments,
+then identify the numeric run and the iteration stored in `last.checkpoint`:
+
+```bash
+python source/train.py \
+    --source_path /path/to/scene \
+    --resolution 2 \
+    --model_path <run-id> \
+    --start_iter <last-iteration> \
+    --end_iter 64000
+```
 
 Use `--help` after building the renderer to list all parameters:
 

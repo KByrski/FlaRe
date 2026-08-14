@@ -4,6 +4,11 @@ from typing import Callable, Dict, Iterable, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
+from checkpoint_io import (
+    MODEL_TENSOR_NAMES,
+    create_checkpoint_payload,
+    save_checkpoint_payload,
+)
 import torch.nn.functional as F
 from PIL import Image
 from tqdm import tqdm
@@ -840,15 +845,18 @@ def optimize_latent_style(
         os.path.join(style_dir, "latent_style.pt"),
     )
     checkpoint["conditioning_variable"] = styled_conditioning
-    tensor_names = (
-        "RGB", "A", "k", "w1_uv", "w1_v", "w1_conditioning", "b1",
-        "w2", "b2", "w3", "b3", "conditioning_variable", "features",
-        "m", "s", "q",
-    )
+    tensor_names = MODEL_TENSOR_NAMES
     if "RGB" not in checkpoint:
         tensor_names = tensor_names[1:]
-    payload = tuple(checkpoint[name].detach() for name in tensor_names) + (
-        None, float(checkpoint.get("training_time_seconds", 0.0)),
+    payload = create_checkpoint_payload(
+        {name: checkpoint[name] for name in tensor_names},
+        optimizer_state=None,
+        iteration=int(checkpoint.get("iteration", -1)),
+        training_time_seconds=float(
+            checkpoint.get("training_time_seconds", 0.0)
+        ),
     )
-    torch.save(payload, os.path.join(style_dir, "styled_model.checkpoint"))
+    save_checkpoint_payload(
+        os.path.join(style_dir, "styled_model.checkpoint"), payload
+    )
     return styled_conditioning, checkpoint

@@ -9,7 +9,9 @@ import re
 
 import torch
 
-from evaluate import flare_renderer, load_model, load_test_cameras, render_one, save_render
+from evaluate import load_model, load_test_cameras, process_gpu_memory_mb
+from evaluation_service import EvaluationOptions, render_one, save_render
+from renderer_facade import FlaReRenderer
 from flare_edit_io import (
     deform_vertices,
     read_edit_ply,
@@ -241,40 +243,27 @@ def main() -> int:
         view = views[args.camera_index]
         print(
             f"Using test camera {args.camera_index}/{len(views) - 1}: "
-            f"{view['name']}",
+            f"{view.name}",
             flush=True,
         )
 
     used_camera_indices = {job[4] for job in render_jobs}
     used_views = [views[index] for index in sorted(used_camera_indices)]
     model = load_model(args.checkpoint.resolve(), device)
-    count = int(model["m"].shape[0])
-    if args.mode == "base" and "RGB" not in model:
+    count = int(model.m.shape[0])
+    if args.mode == "base" and model.RGB is None:
         raise ValueError(
             "This is a 17-entry FlaRe-only checkpoint without base RGB; "
             "render with --mode FlaRe (the default)"
         )
-    # Legacy 17-entry checkpoints predate the separate base-RGB multiplier.
-    # Current CUDA computes final_rgb = RGBA_param.rgb * MLP_rgb, so an identity
-    # multiplier (ones), not zeros, reproduces the legacy MLP-only color path.
-    if "RGB" in model:
-        rgb = model["RGB"]
-    else:
-        rgb = torch.ones_like(model["m"])
-        print(
-            "Legacy 17-entry checkpoint: using identity base-RGB multiplier.",
-            flush=True,
-        )
-    model["RGBA"] = torch.cat((rgb, model["A"]), 1).contiguous()
-    model["w1_fp16"] = torch.cat((model["w1_uv"], model["w1_v"], model["w1_conditioning"]), 1).half().contiguous()
-    model["w2_fp16"], model["w3_fp16"] = model["w2"].half().contiguous(), model["w3"].half().contiguous()
-    model["conditioning_variable_fp16"] = model["conditioning_variable"].half().contiguous()
-
-    # evaluate.py has already loaded the current renderer extension.
     max_pixel_count = max(
-        int(view["width"]) * int(view["height"]) for view in used_views
+        view.width * view.height for view in used_views
     )
-    renderer = flare_renderer.CPyOptiXFLARERenderer(8, 11.3449, max_pixel_count)
+    renderer = FlaReRenderer(8, 11.3449, max_pixel_count)
+    options = EvaluationOptions(
+        background=(args.bg_color_R, args.bg_color_G, args.bg_color_B),
+        ray_termination_threshold=args.ray_termination_T_threshold_inference,
+    )
     args.output_dir.mkdir(parents=True, exist_ok=True)
     # A sweep deforms the same base geometry 360 times, so load the large PLY
     # only once rather than parsing it again for every phase.
@@ -302,11 +291,22 @@ def main() -> int:
             rotation_z_degrees=args.deform_rotation_z,
             phase_shift_degrees=phase_shift_degrees,
         )
-        model["m"], model["s"], model["q"] = vertices_to_primitives(
-            vertices, model["A"], model["k"], model["s"], model["q"]
+        means, scales, quaternions = vertices_to_primitives(
+            vertices, model.A, model.k, model.s, model.q
         )
-        renderer.SetGeometry(model["m"], torch.exp(model["s"]), model["q"], torch.sigmoid(model["A"]), 1.0 + torch.nn.functional.softplus(model["k"]))
-        image, elapsed, _, _ = render_one(args.mode, renderer, view, model, args, device)
+        model.replace_parameters(
+            {"m": means, "s": scales, "q": quaternions}, requires_grad=False
+        )
+        renderer.sync_geometry(model)
+        image, elapsed, _, _ = render_one(
+            args.mode,
+            renderer,
+            view,
+            model,
+            options,
+            device,
+            memory_reader=process_gpu_memory_mb,
+        )
         destination = args.output_dir / f"{index:06d}.png"
         save_render(image, destination)
         phase_text = (
@@ -318,7 +318,7 @@ def main() -> int:
             else ""
         )
         camera_text = (
-            f", camera={camera_index}:{view['name']}" if sweep_camera else ""
+            f", camera={camera_index}:{view.name}" if sweep_camera else ""
         )
         print(
             f"[{index + 1}/{len(render_jobs)}] {ply_path.name}"

@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import time
+from types import SimpleNamespace
 
 import numpy as np
 import torch
@@ -18,7 +19,6 @@ if output_path not in sys.path:
 
 import PYOPTIXFLARERENDERER as flare_renderer
 
-from arguments import GroupParams
 from checkpoint_io import load_model_checkpoint
 from scene.dataset_readers import sceneLoadTypeCallbacks
 from style_transfer import CLIPGaussianConfig, LatentOptimizationConfig, optimize_latent_style
@@ -35,10 +35,10 @@ def ensure_shader_visible():
 
 
 def make_camera_args(args):
-    camera_args = GroupParams()
-    camera_args.resolution = args.resolution
-    camera_args.data_device = getattr(args, "data_device", "cuda")
-    return camera_args
+    return SimpleNamespace(
+        resolution=args.resolution,
+        data_device=getattr(args, "data_device", "cuda"),
+    )
 
 
 def load_scene_cameras(args):
